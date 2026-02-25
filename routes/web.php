@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
 use App\Http\Controllers\Vendor\ProductController as VendorProductController;
 use App\Http\Controllers\Vendor\VariantController;
@@ -33,7 +34,7 @@ use App\Http\Controllers\WebhookController;
 */
 
 // Home & Shop
-Route::get('/', [ShopController::class, 'index'])->name('home');
+Route::get('/', [ShopController::class, 'home'])->name('home');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/search', [ShopController::class, 'search'])->name('shop.search');
 Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shop.show');
@@ -138,6 +139,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     // CMS Pages
     Route::resource('pages', AdminPageController::class);
+
+    // Media Manager
+    Route::get('/media', [AdminMediaController::class, 'index'])->name('media.index');
+    Route::post('/media', [AdminMediaController::class, 'store'])->name('media.store');
+    Route::delete('/media/{medium}', [AdminMediaController::class, 'destroy'])->name('media.destroy');
 });
 
 /*

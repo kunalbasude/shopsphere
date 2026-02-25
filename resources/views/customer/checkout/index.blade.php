@@ -55,13 +55,21 @@
 
                         <h6 class="fw-bold mb-3">Payment Method</h6>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="payment_method" value="stripe" id="payStripe" checked>
-                            <label class="form-check-label" for="payStripe">Stripe (Credit/Debit Card)</label>
+                            <input class="form-check-input" type="radio" name="payment_method" value="cod" id="payCod" checked>
+                            <label class="form-check-label" for="payCod"><i class="bi bi-cash-coin me-1"></i> Cash on Delivery</label>
                         </div>
+                        @if(config('shopsphere.payment.stripe.secret'))
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="payment_method" value="stripe" id="payStripe">
+                            <label class="form-check-label" for="payStripe"><i class="bi bi-credit-card me-1"></i> Stripe (Credit/Debit Card)</label>
+                        </div>
+                        @endif
+                        @if(config('shopsphere.payment.razorpay.key'))
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="radio" name="payment_method" value="razorpay" id="payRazorpay">
-                            <label class="form-check-label" for="payRazorpay">Razorpay</label>
+                            <label class="form-check-label" for="payRazorpay"><i class="bi bi-wallet2 me-1"></i> Razorpay</label>
                         </div>
+                        @endif
 
                         <button type="submit" class="btn btn-primary w-100 btn-lg" id="placeOrderBtn">Place Order</button>
                     </form>

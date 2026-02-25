@@ -67,9 +67,19 @@
                     </div>
 
                     <!-- Coupon -->
-                    <div class="mt-3">
-                        <div class="input-group">
-                            <input type="text" id="couponCode" class="form-control" placeholder="Coupon code">
+                    <div class="mt-3" id="couponSection">
+                        @if($cartSummary['coupon'])
+                            <div class="d-flex align-items-center justify-content-between bg-success bg-opacity-10 rounded-2 p-2 mb-2" id="appliedCoupon">
+                                <div>
+                                    <i class="bi bi-ticket-perforated text-success me-1"></i>
+                                    <strong class="text-success">{{ $cartSummary['coupon']->code }}</strong>
+                                    <small class="text-muted ms-1">applied</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger" id="removeCouponBtn" style="border-radius: 6px;"><i class="bi bi-x"></i></button>
+                            </div>
+                        @endif
+                        <div class="input-group" id="couponInput" style="{{ $cartSummary['coupon'] ? 'display:none;' : '' }}">
+                            <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code">
                             <button class="btn btn-outline-primary" id="applyCouponBtn">Apply</button>
                         </div>
                         <div id="couponMessage" class="small mt-1"></div>

@@ -34,6 +34,7 @@ class CouponController extends Controller
         ]);
 
         $validated['code'] = strtoupper($validated['code']);
+        $validated['is_active'] = $request->has('is_active');
         Coupon::create($validated);
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon created successfully.');
@@ -60,6 +61,7 @@ class CouponController extends Controller
         ]);
 
         $validated['code'] = strtoupper($validated['code']);
+        $validated['is_active'] = $request->has('is_active');
         $coupon->update($validated);
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon updated.');

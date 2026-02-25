@@ -44,22 +44,54 @@ class CheckoutController extends Controller
             'zip' => 'required|string|max:20',
             'country' => 'required|string|max:100',
             'notes' => 'nullable|string|max:500',
-            'payment_method' => 'required|in:stripe,razorpay',
+            'payment_method' => 'required|in:stripe,razorpay,cod',
         ]);
 
-        $order = $this->orderService->createOrder($validated, $validated['payment_method']);
+        try {
+            $order = $this->orderService->createOrder($validated, $validated['payment_method']);
 
-        if ($validated['payment_method'] === 'stripe') {
-            $session = $this->paymentService->createStripeSession($order);
-            return response()->json(['checkout_url' => $session->url]);
-        }
+            // Cash on Delivery
+            if ($validated['payment_method'] === 'cod') {
+                $order->update([
+                    'status' => 'confirmed',
+                    'payment_status' => 'paid',
+                ]);
 
-        if ($validated['payment_method'] === 'razorpay') {
-            $razorpayOrder = $this->paymentService->createRazorpayOrder($order);
-            return response()->json([
-                'razorpay' => $razorpayOrder,
-                'order_id' => $order->id,
+                \App\Models\OrderStatusHistory::create([
+                    'order_id' => $order->id,
+                    'status' => 'confirmed',
+                    'comment' => 'Cash on Delivery order confirmed.',
+                    'changed_by' => auth()->id(),
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'redirect_url' => route('checkout.success', ['order' => $order->id]),
+                ]);
+            }
+
+            if ($validated['payment_method'] === 'stripe') {
+                $session = $this->paymentService->createStripeSession($order);
+                return response()->json(['checkout_url' => $session->url]);
+            }
+
+            if ($validated['payment_method'] === 'razorpay') {
+                $razorpayOrder = $this->paymentService->createRazorpayOrder($order);
+                return response()->json([
+                    'razorpay' => $razorpayOrder,
+                    'order_id' => $order->id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Checkout error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'user' => auth()->id(),
             ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Order could not be processed. Please try again.',
+            ], 500);
         }
     }
 

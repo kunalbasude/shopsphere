@@ -45,6 +45,10 @@ class Coupon extends Model
 
     public function hasUserExceededLimit(int $userId): bool
     {
+        if (!$this->per_user_limit) {
+            return false;
+        }
+
         $count = $this->usages()->where('user_id', $userId)->count();
         return $count >= $this->per_user_limit;
     }

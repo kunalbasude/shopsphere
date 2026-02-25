@@ -24,8 +24,19 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(data)
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                return res.json().then(data => { throw new Error(data.message || 'Something went wrong.'); });
+            }
+            return res.json();
+        })
         .then(response => {
+            // COD or direct redirect
+            if (response.redirect_url) {
+                window.location.href = response.redirect_url;
+                return;
+            }
+
             // Stripe: redirect to hosted checkout
             if (response.checkout_url) {
                 window.location.href = response.checkout_url;
@@ -45,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error(err);
             btn.disabled = false;
             btn.textContent = 'Place Order';
-            alert('Something went wrong. Please try again.');
+            alert(err.message || 'Something went wrong. Please try again.');
         });
     });
 });

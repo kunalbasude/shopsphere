@@ -134,9 +134,13 @@ function addToCart(productId, quantity, variantId) {
 // ─── Simple Toast Notification ─────────────────────────────
 function showToast(message) {
     const toast = document.createElement('div');
-    toast.className = 'position-fixed bottom-0 end-0 m-3 p-3 bg-dark text-white rounded shadow';
-    toast.style.zIndex = '9999';
-    toast.textContent = message;
+    toast.className = 'ss-toast';
+    toast.innerHTML = '<i class="bi bi-check-circle me-2"></i>' + message;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }

@@ -10,6 +10,29 @@ use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
+    public function home()
+    {
+        $categories = Category::where('is_active', true)
+            ->whereNull('parent_id')
+            ->withCount('products')
+            ->with('children')
+            ->get();
+
+        $featuredProducts = Product::active()
+            ->featured()
+            ->with('images', 'vendor', 'reviews')
+            ->take(8)
+            ->get();
+
+        $latestProducts = Product::active()
+            ->with('images', 'vendor', 'reviews')
+            ->latest()
+            ->take(8)
+            ->get();
+
+        return view('customer.home', compact('categories', 'featuredProducts', 'latestProducts'));
+    }
+
     public function index(Request $request)
     {
         $products = Product::active()
@@ -26,7 +49,7 @@ class ShopController extends Controller
             ->when(!$request->sort, fn($q) => $q->latest())
             ->paginate(12);
 
-        $categories = Category::where('is_active', true)->whereNull('parent_id')->with('children')->get();
+        $categories = Category::where('is_active', true)->whereNull('parent_id')->withCount('products')->with('children')->get();
 
         return view('customer.shop.index', compact('products', 'categories'));
     }

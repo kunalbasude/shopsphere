@@ -43,6 +43,12 @@
         <input type="datetime-local" name="expires_at" class="form-control" value="{{ old('expires_at', isset($coupon) && $coupon->expires_at ? $coupon->expires_at->format('Y-m-d\TH:i') : '') }}">
     </div>
 </div>
+<div class="mb-3">
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" name="is_active" value="1" id="isActive" {{ old('is_active', $coupon->is_active ?? true) ? 'checked' : '' }}>
+        <label class="form-check-label" for="isActive">Active</label>
+    </div>
+</div>
 @if($errors->any())
     <div class="alert alert-danger">
         @foreach($errors->all() as $error)<p class="mb-0">{{ $error }}</p>@endforeach

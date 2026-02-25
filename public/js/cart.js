@@ -78,9 +78,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 const msg = document.getElementById('couponMessage');
                 msg.textContent = data.message;
                 msg.className = `small mt-1 ${data.success ? 'text-success' : 'text-danger'}`;
-                if (data.cart) updateCartTotals(data.cart);
+                if (data.success && data.cart) {
+                    updateCartTotals(data.cart);
+                    // Show applied coupon badge
+                    const couponInput = document.getElementById('couponInput');
+                    const code = document.getElementById('couponCode').value.trim().toUpperCase();
+                    if (couponInput) couponInput.style.display = 'none';
+                    msg.textContent = '';
+                    const badge = document.createElement('div');
+                    badge.id = 'appliedCoupon';
+                    badge.className = 'd-flex align-items-center justify-content-between bg-success bg-opacity-10 rounded-2 p-2 mb-2';
+                    badge.innerHTML = '<div><i class="bi bi-ticket-perforated text-success me-1"></i><strong class="text-success">' + code + '</strong> <small class="text-muted ms-1">applied</small></div><button class="btn btn-sm btn-outline-danger" id="removeCouponBtn" style="border-radius:6px;"><i class="bi bi-x"></i></button>';
+                    document.getElementById('couponSection').prepend(badge);
+                    badge.querySelector('#removeCouponBtn').addEventListener('click', removeCoupon);
+                } else if (data.cart) {
+                    updateCartTotals(data.cart);
+                }
             });
         });
+    }
+
+    // ─── Remove Coupon ──────────────────────────────────────
+    const removeCouponBtn = document.getElementById('removeCouponBtn');
+    if (removeCouponBtn) {
+        removeCouponBtn.addEventListener('click', removeCoupon);
     }
 
     // ─── Apply Reward Points ───────────────────────────────
@@ -107,6 +128,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function removeCoupon() {
+    fetch('/cart/coupon/remove', {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Accept': 'application/json',
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const badge = document.getElementById('appliedCoupon');
+            if (badge) badge.remove();
+            const couponInput = document.getElementById('couponInput');
+            if (couponInput) couponInput.style.display = '';
+            document.getElementById('couponCode').value = '';
+            updateCartTotals(data.cart);
+            showToast(data.message);
+        }
+    });
+}
 
 function updateCartTotals(cart) {
     document.getElementById('subtotal').textContent = '$' + parseFloat(cart.subtotal).toFixed(2);

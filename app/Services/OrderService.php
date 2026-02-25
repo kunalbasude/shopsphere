@@ -109,11 +109,17 @@ class OrderService
                 $cart->coupon->increment('used_count');
             }
 
-            // Deduct reward points
+            // Deduct reward points (with safety check)
             if ($cart->reward_points_used > 0) {
                 $rp = RewardPoint::firstOrCreate(['user_id' => $user->id], ['balance' => 0, 'total_earned' => 0, 'total_redeemed' => 0]);
-                $rp->decrement('balance', $cart->reward_points_used);
-                $rp->increment('total_redeemed', $cart->reward_points_used);
+
+                $pointsToDeduct = min($cart->reward_points_used, $rp->balance);
+                if ($pointsToDeduct <= 0) {
+                    $cart->update(['reward_points_used' => 0]);
+                } else {
+                    $rp->decrement('balance', $pointsToDeduct);
+                    $rp->increment('total_redeemed', $pointsToDeduct);
+                }
 
                 RewardTransaction::create([
                     'user_id' => $user->id,

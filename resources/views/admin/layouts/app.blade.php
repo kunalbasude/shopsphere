@@ -62,6 +62,11 @@
                             <i class="bi bi-file-earmark-text"></i> CMS Pages
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.media.*') ? 'active' : '' }}" href="{{ route('admin.media.index') }}">
+                            <i class="bi bi-images"></i> Media
+                        </a>
+                    </li>
                     <li class="nav-item mt-3">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
