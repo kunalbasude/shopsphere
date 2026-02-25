@@ -39,7 +39,6 @@ class ShopSphereSeeder extends Seeder
             'shop_name' => 'Demo Shop',
             'slug' => 'demo-shop',
             'description' => 'A demo vendor shop for testing purposes.',
-            'phone' => '1234567890',
             'address' => '123 Demo Street',
             'city' => 'Demo City',
             'state' => 'Demo State',
@@ -96,8 +95,11 @@ class ShopSphereSeeder extends Seeder
             'billing_cycle' => 'monthly',
             'product_limit' => 10,
             'commission_rate' => 15.00,
-            'features' => json_encode(['10 product listings', 'Basic analytics', 'Email support']),
+            'featured_products' => false,
+            'analytics_access' => false,
+            'priority_support' => false,
             'is_active' => true,
+            'sort_order' => 1,
         ]);
 
         SubscriptionPlan::create([
@@ -108,8 +110,11 @@ class ShopSphereSeeder extends Seeder
             'billing_cycle' => 'monthly',
             'product_limit' => 100,
             'commission_rate' => 10.00,
-            'features' => json_encode(['100 product listings', 'Advanced analytics', 'Priority support', 'Custom coupons']),
+            'featured_products' => false,
+            'analytics_access' => true,
+            'priority_support' => false,
             'is_active' => true,
+            'sort_order' => 2,
         ]);
 
         SubscriptionPlan::create([
@@ -120,8 +125,11 @@ class ShopSphereSeeder extends Seeder
             'billing_cycle' => 'monthly',
             'product_limit' => 500,
             'commission_rate' => 7.50,
-            'features' => json_encode(['500 product listings', 'Full analytics dashboard', '24/7 support', 'Custom coupons', 'Featured products']),
+            'featured_products' => true,
+            'analytics_access' => true,
+            'priority_support' => true,
             'is_active' => true,
+            'sort_order' => 3,
         ]);
 
         SubscriptionPlan::create([
@@ -132,8 +140,11 @@ class ShopSphereSeeder extends Seeder
             'billing_cycle' => 'monthly',
             'product_limit' => 0,
             'commission_rate' => 5.00,
-            'features' => json_encode(['Unlimited products', 'Full analytics dashboard', 'Dedicated support', 'All features included', 'API access']),
+            'featured_products' => true,
+            'analytics_access' => true,
+            'priority_support' => true,
             'is_active' => true,
+            'sort_order' => 4,
         ]);
 
         // ─── CMS Pages ──────────────────────────────────────

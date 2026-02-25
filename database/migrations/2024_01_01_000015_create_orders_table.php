@@ -44,10 +44,18 @@ return new class extends Migration
             $table->index('status');
             $table->index('payment_status');
         });
+
+        // Add FK constraint now that orders table exists
+        Schema::table('coupon_usages', function (Blueprint $table) {
+            $table->foreign('order_id')->references('id')->on('orders')->cascadeOnDelete();
+        });
     }
 
     public function down(): void
     {
+        Schema::table('coupon_usages', function (Blueprint $table) {
+            $table->dropForeign(['order_id']);
+        });
         Schema::dropIfExists('orders');
     }
 };

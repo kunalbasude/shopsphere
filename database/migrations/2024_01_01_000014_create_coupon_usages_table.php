@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('coupon_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('order_id');
             $table->decimal('discount_amount', 10, 2);
             $table->timestamps();
 
