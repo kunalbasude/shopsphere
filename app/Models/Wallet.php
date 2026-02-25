@@ -10,6 +10,7 @@ class Wallet extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'vendor_id',
         'balance',
         'total_earned',
@@ -27,6 +28,11 @@ class Wallet extends Model
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function transactions()

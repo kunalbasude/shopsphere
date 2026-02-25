@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ session('locale', 'en') }}" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,14 +30,46 @@
                 <!-- Search -->
                 <div class="ss-search-wrapper mx-auto">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search for products...">
+                    <input type="text" id="searchInput" class="form-control" placeholder="{{ __('messages.search_placeholder') }}">
                     <div id="searchResults" class="ss-search-results shadow-lg"></div>
                 </div>
 
                 <ul class="navbar-nav ms-auto align-items-center gap-1">
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown" style="padding: 0.5rem 0.75rem;">
+                            <i class="bi bi-translate"></i>
+                            <span class="d-none d-md-inline">{{ strtoupper(session('locale', 'en')) }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" style="border-radius: 12px; min-width: 160px;">
+                            <li><a class="dropdown-item py-2" href="#" onclick="changeLanguage('en'); return false;">
+                                <span class="me-2">🇺🇸</span> English
+                            </a></li>
+                            <li><a class="dropdown-item py-2" href="#" onclick="changeLanguage('es'); return false;">
+                                <span class="me-2">🇪🇸</span> Español
+                            </a></li>
+                            <li><a class="dropdown-item py-2" href="#" onclick="changeLanguage('fr'); return false;">
+                                <span class="me-2">🇫🇷</span> Français
+                            </a></li>
+                            <li><a class="dropdown-item py-2" href="#" onclick="changeLanguage('de'); return false;">
+                                <span class="me-2">🇩🇪</span> Deutsch
+                            </a></li>
+                            <li><a class="dropdown-item py-2" href="#" onclick="changeLanguage('hi'); return false;">
+                                <span class="me-2">🇮🇳</span> हिंदी
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Theme Toggle -->
+                    <li class="nav-item">
+                        <button class="nav-link border-0 bg-transparent" id="themeToggle" onclick="toggleTheme()" style="cursor: pointer;">
+                            <i class="bi bi-moon-fill" id="themeIcon"></i>
+                        </button>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('shop.index') }}">
-                            <i class="bi bi-shop me-1"></i>Shop
+                            <i class="bi bi-shop me-1"></i>{{ __('messages.shop') }}
                         </a>
                     </li>
                     <li class="nav-item">
@@ -184,6 +216,58 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
+
+        // Theme Toggle Function
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update icon
+            const icon = document.getElementById('themeIcon');
+            if (newTheme === 'dark') {
+                icon.classList.remove('bi-moon-fill');
+                icon.classList.add('bi-sun-fill');
+            } else {
+                icon.classList.remove('bi-sun-fill');
+                icon.classList.add('bi-moon-fill');
+            }
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            
+            html.setAttribute('data-theme', savedTheme);
+            
+            if (savedTheme === 'dark') {
+                icon.classList.remove('bi-moon-fill');
+                icon.classList.add('bi-sun-fill');
+            }
+        });
+
+        // Language Change Function
+        function changeLanguage(locale) {
+            fetch('{{ route("locale.change", "") }}/' + locale, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
     </script>
     <script src="{{ asset('js/app.js') }}"></script>
     @stack('scripts')

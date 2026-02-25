@@ -9,12 +9,20 @@ use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Customer\WishlistController;
 use App\Http\Controllers\Customer\ReviewController;
 use App\Http\Controllers\Customer\AccountController;
+use App\Http\Controllers\Customer\WalletController;
+use App\Http\Controllers\Customer\RewardPointController;
 use App\Http\Controllers\Customer\PageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\VendorController as AdminVendorController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\RewardPointController as AdminRewardPointController;
+use App\Http\Controllers\Admin\WalletController as AdminWalletController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
@@ -32,6 +40,15 @@ use App\Http\Controllers\WebhookController;
 | Public Routes
 |--------------------------------------------------------------------------
 */
+
+// Language Switch
+Route::post('/locale/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'es', 'fr', 'de', 'hi'])) {
+        session(['locale' => $locale]);
+        app()->setLocale($locale);
+    }
+    return response()->json(['success' => true]);
+})->name('locale.change');
 
 // Home & Shop
 Route::get('/', [ShopController::class, 'home'])->name('home');
@@ -100,6 +117,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])->name('account.index');
     Route::put('/account', [AccountController::class, 'update'])->name('account.update');
     Route::put('/account/password', [AccountController::class, 'changePassword'])->name('account.password');
+
+    // Wallet
+    Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
+
+    // Reward Points
+    Route::get('/reward-points', [RewardPointController::class, 'index'])->name('reward-points.index');
 });
 
 /*
@@ -133,6 +156,34 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     // Coupons
     Route::resource('coupons', AdminCouponController::class);
+
+    // Categories
+    Route::resource('categories', CategoryController::class);
+
+    // Brands
+    Route::resource('brands', BrandController::class);
+
+    // Attributes
+    Route::resource('attributes', AttributeController::class);
+
+    // Reward Points
+    Route::get('/reward-points', [AdminRewardPointController::class, 'index'])->name('reward-points.index');
+    Route::get('/reward-points/create', [AdminRewardPointController::class, 'create'])->name('reward-points.create');
+    Route::post('/reward-points', [AdminRewardPointController::class, 'store'])->name('reward-points.store');
+    Route::get('/reward-points/{user}', [AdminRewardPointController::class, 'show'])->name('reward-points.show');
+
+    // Wallets
+    Route::get('/wallets', [AdminWalletController::class, 'index'])->name('wallets.index');
+    Route::get('/wallets/create', [AdminWalletController::class, 'create'])->name('wallets.create');
+    Route::post('/wallets', [AdminWalletController::class, 'store'])->name('wallets.store');
+    Route::get('/wallets/{user}', [AdminWalletController::class, 'show'])->name('wallets.show');
+
+    // Settings
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::get('/settings/create', [SettingController::class, 'create'])->name('settings.create');
+    Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
+    Route::delete('/settings/{setting}', [SettingController::class, 'destroy'])->name('settings.destroy');
 
     // Subscription Plans
     Route::resource('plans', SubscriptionPlanController::class);
